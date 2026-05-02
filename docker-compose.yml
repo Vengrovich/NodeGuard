@@ -1,0 +1,32 @@
+version: '3.3' 
+
+services:
+  backend:
+    build: ./backend
+    container_name: vps-dashboard-backend
+    ports:
+      - "127.0.0.1:3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - JWT_SECRET=${JWT_SECRET:-changeme_very_secret_key_123}
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+    networks:
+      - dashboard-net
+
+  frontend:
+    build: ./frontend
+    container_name: vps-dashboard-frontend
+    ports:
+      - "127.0.0.1:3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - dashboard-net
+
+networks:
+  dashboard-net:
+    driver: bridge
